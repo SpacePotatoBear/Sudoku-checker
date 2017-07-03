@@ -26,31 +26,35 @@ int VALID_SUM;
 
 void printPuzzle(Puzzle puzzle)
 {
+    printf("read puzzle:\n");
     int i;
     for (i = 0; i < 9 * 9; i++)
     {
-        if (i % 9 == 0) printf("\n");
+        if (i % 9 == 0 && i > 0) printf("\n");
         printf("%d ", *(puzzle.matrix + (i * sizeof(int))));
     }
+    printf("\n");
 }
 
 
 //reads the sudoku puzzle in from a file passed as param
 Puzzle loadPuzzle(char *fileName)
 {
+    printf("%s\n", fileName);
     FILE *file_ptr;
-    file_ptr = fopen(fileName, "r+");
+    file_ptr = fopen(fileName, "r");
     int temp, count = 0;
 
     Puzzle puzzle;
     puzzle.rows = 9;
     puzzle.cols = 9;
-    puzzle.matrix = calloc(9 * 9, sizeof(int));
+    puzzle.matrix = calloc(81, sizeof(int));
 
-    while (fscanf(file_ptr, "%d", &temp) == 1 && count < 9 * 9)
+    while (fscanf(file_ptr, "%d", &temp) == 1 && count < 81)
     {
         *(puzzle.matrix + (count * sizeof(int))) = temp;
-        printf("%d\n", temp);
+        printf("%d %d\n", temp, count);
+        //temp = 0;
         count++;
     }
 
