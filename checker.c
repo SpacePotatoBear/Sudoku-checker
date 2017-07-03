@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct
 {
@@ -7,14 +8,57 @@ typedef struct
     int *matrix;
 } Puzzle;
 
+typedef enum
+{
+    row,
+    sector,
+    col
+} type;
+
+typedef struct
+{
+    type type;
+    Puzzle Puzzle;
+    int checkValue;
+} parameters;
+
 int VALID_SUM;
+
+void printPuzzle(Puzzle puzzle)
+{
+    int i;
+    for (i = 0; i < 9 * 9; i++)
+    {
+        if (i % 9 == 0) printf("\n");
+        printf("%d ", *(puzzle.matrix + (i * sizeof(int))));
+    }
+}
+
 
 //reads the sudoku puzzle in from a file passed as param
 Puzzle loadPuzzle(char *fileName)
 {
     FILE *file_ptr;
+    file_ptr = fopen(fileName, "r+");
+    int temp, count = 0;
+
+    Puzzle puzzle;
+    puzzle.rows = 9;
+    puzzle.cols = 9;
+    puzzle.matrix = calloc(9 * 9, sizeof(int));
+
+    while (fscanf(file_ptr, "%d", &temp) == 1 && count < 9 * 9)
+    {
+        *(puzzle.matrix + (count * sizeof(int))) = temp;
+        printf("%d\n", temp);
+        count++;
+    }
+
+    printPuzzle(puzzle);
+    return puzzle;
 }
 
+/*
 //determines the size of the puzzle and a valid sum
 int getSum(Puzzle puzzle)
 {
@@ -71,6 +115,29 @@ int checkSector(Puzzle puzzle, int sector)
     return (total == VALID_SUM) ? 0 : 1;
 }
 
+void *enteryPoint(void* parameters)
+{
+    parameter *options = (parameter*) parameters;
+    switch (options->type)
+    {
+        case row:
+            break;
+        case col:
+            break;
+        case sector:
+            break;
+    }
+}
+*/
 int main(int argc, char *argv[])
 {
+    if (argc < 2)
+    {
+        printf("Please provide the name of the file which contains the sudoku puzzle to check\n");
+        printf("example usage: \"checker puzzle.txt\"\n");
+        return 1;
+    }
+
+    Puzzle puzzle = loadPuzzle(argv[1]);
+    return 1;
 }
