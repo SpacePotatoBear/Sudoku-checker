@@ -129,10 +129,11 @@ int checkSector(Puzzle puzzle, int sector)
     //x needs to hit, 0, 3, 6, 27, 30, 33, 54, 57, 60
     int x, z, n;
     int *numberCheck = calloc(10, sizeof(int));
-    //sector--;
+
+    //this sets x to the starting block of the sub matrix
     if (sector < 3) x = sector * 3;
-    else if (sector < 6) x = 27 + sector * 3;
-    else if (sector < 9) x = 54 + sector * 3;
+    else if (sector < 6) x = 27 + (sector - 3) * 3;
+    else if (sector < 9) x = 54 + (sector - 6) * 3;
     else
     {
         printf("something went wrong\n");
@@ -174,27 +175,31 @@ void *entryPoint(void* parameter)
     Parameters * options = (Parameters*)parameter;
     switch (options->type)
     {
-        case row:
-            options->result = checkRow(options->puzzle, options->checkValue);
-            break;
-        case col:
-            options->result = checkCol(options->puzzle, options->checkValue);
-            break;
-        case sector:
-            options->result = checkSector(options->puzzle, options->checkValue);
-            break;
+    case row:
+        options->result = checkRow(options->puzzle,
+                                   options->checkValue);
+        break;
+    case col:
+        options->result = checkCol(options->puzzle,
+                                   options->checkValue);
+        break;
+    case sector:
+        options->result = checkSector(options->puzzle,
+                                      options->checkValue);
+        break;
     }
     return NULL;
 }
 
 int main(int argc, char *argv[])
 {
-    int x, y = 0, r;
+    int x, y = 0;
     int *results = calloc(27, sizeof(int));
     Parameters **t_args = calloc(27, sizeof(Parameters*));
     if (argc < 2)
     {
-        printf("Please provide the name of the file which contains the sudoku puzzle to check\n");
+        printf("Please provide the name of the file which contains the ");
+        printf("sudoku puzzle to check\n");
         printf("example usage: \"checker puzzle.txt\"\n");
         return 1;
     }
@@ -213,7 +218,7 @@ int main(int argc, char *argv[])
 
         t_args[y] = args;
 
-        r = pthread_create(&tid[y], NULL, entryPoint, args);
+        pthread_create(&tid[y], NULL, entryPoint, args);
         y++;
     }
     for (x = 0; x < 9; x++)
@@ -226,7 +231,7 @@ int main(int argc, char *argv[])
 
         t_args[y] = args;
 
-        r = pthread_create(&tid[y], NULL, entryPoint, args);
+        pthread_create(&tid[y], NULL, entryPoint, args);
         y++;
     }
     for (x = 0; x < 9; x++)
@@ -239,7 +244,7 @@ int main(int argc, char *argv[])
 
         t_args[y] = args;
 
-        r = pthread_create(&tid[y], NULL, entryPoint, args);
+        pthread_create(&tid[y], NULL, entryPoint, args);
         y++;
     }
 
@@ -251,7 +256,7 @@ int main(int argc, char *argv[])
 
     for (x = 0; x < 27; x++)
     {
-        printf("%d\n", results[x]);
+        //printf("%d\n", results[x]);
         if (results[x] != 1)
         {
             printf("Not a valid Sudoku solution\n");
